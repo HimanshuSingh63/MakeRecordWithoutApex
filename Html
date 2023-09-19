@@ -1,0 +1,9 @@
+<template>
+    <lightning-card title="Creating Record Without Apex"> <!-- A Lightning Card component with a title -->
+        <div class="slds-m-around_medium"> <!-- A div with medium padding around it -->
+            <lightning-input label="Id" disabled value={accountId}></lightning-input> <!-- A disabled input field for displaying the Id of the created Account record -->
+            <lightning-input label="Name" onchange={handleNameChange}></lightning-input> <!-- An input field for entering the name of the Account. The handleNameChange function is called when the value of this field changes -->
+            <lightning-button label="Create Button" variant="Brand" onclick={handleCreateAccount}></lightning-button> <!-- A button for creating the Account record. The handleCreateAccount function is called when this button is clicked -->
+        </div>
+    </lightning-card>
+</template>
