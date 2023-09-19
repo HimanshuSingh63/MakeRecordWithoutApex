@@ -1,0 +1,56 @@
+import { LightningElement } from 'lwc'; // Importing necessary modules from LWC
+import { createRecord } from 'lightning/uiRecordApi'; // Importing createRecord from uiRecordApi to create a new record
+import ACCOUNT_OBJECT from '@salesforce/schema/Account'; // Importing Account object from Salesforce schema
+import { ShowToastEvent } from 'lightning/platformShowToastEvent'; // Importing ShowToastEvent to display toast messages
+import NAME_FIELD from '@salesforce/schema/Account.Name'; // Importing Name field from Account object in Salesforce schema
+import matchNameMethod from '@salesforce/apex/MatchName.matchNameMethod'; // Importing Apex method to check for matching account names
+
+export default class CreateRecordWithoutApex extends LightningElement {
+    Name = ''; // Variable to hold the name value entered in the LWC
+
+    // Function to handle the change in name input field value
+    handleNameChange(event) {
+        this.Name = event.target.value; // Updating the Name variable with the entered value
+    }
+
+    // Function to handle account creation
+    async handleCreateAccount() {
+        const fields = {}; 
+        fields[NAME_FIELD.fieldApiName] = this.Name; // Setting the Name field with the entered value
+        const recordInput = { apiName: ACCOUNT_OBJECT.objectApiName, fields }; // Preparing the record input for account creation
+
+        try {
+            const matchName = await matchNameMethod({ acName: this.Name }); // Checking if a matching account name exists
+            if (!matchName) { // If no matching account name exists, create a new account record
+                const account = await createRecord(recordInput);
+                this.showSuccessToast(); // Show success toast message after account creation
+                window.location.reload(); // Reload the window to reflect the changes
+            } else { 
+                this.failToast(); // If a matching account name exists, show failure toast message
+                window.location.reload(); // Reload the window to reflect the changes
+            }
+        } catch (error) {
+            console.error(error); // Log any errors encountered during the process
+        }
+    }
+
+    showSuccessToast() { // Function to display success toast message
+        const event = new ShowToastEvent({
+            label: 'Record Created',
+            message: 'Congratulations!!! You have Created Record',
+            variant: 'success',
+            mode: 'dismissable',
+        });
+        this.dispatchEvent(event); // Dispatching the toast event
+    }
+
+    failToast() { // Function to display failure toast message
+        const event = new ShowToastEvent({
+            label: 'Record Creation failed',
+            message: 'Failed!! Duplicate Name Found!!! Try With Different Name',
+            variant: 'error',
+            mode: 'dismissable',
+        });
+        this.dispatchEvent(event); // Dispatching the toast event
+    }
+}
