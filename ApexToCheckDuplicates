@@ -1,0 +1,20 @@
+public with sharing class MatchName { // Declaring a public Apex class with sharing rules
+
+   @AuraEnabled // Annotation to enable client- and server-side access to the Apex method
+
+   public static Boolean matchNameMethod(String acName){ // Declaring a public static method that returns a Boolean value and takes a String parameter
+   
+      try{
+         List<Account> aclist=[SELECT Id,Name From Account WHERE Name =:acName]; // SOQL query to fetch Accounts with the given name
+         
+         if(aclist.isEmpty()){ // Checking if the list of Accounts is empty
+            return false; // If the list is empty, return false
+         }
+         else{
+            return true; // If the list is not empty, return true
+         }
+    } catch (Exception e) {
+        throw new AuraHandledException(e.getMessage()); // Catching any exceptions and throwing an AuraHandledException with the error message
+    }
+   }
+}
